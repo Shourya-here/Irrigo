@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soil Composition Report</title>
+    <title>Fill your soil data</title>
     <style>
         * {
             margin: 0;
@@ -31,7 +31,7 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 300px;
-            margin-top: 80px; /* To push it below the navbar */
+            margin-top: 80px;
         }
 
         h2 {
@@ -63,7 +63,7 @@
             font-size: 16px;
             cursor: pointer;
         }
-
+        
         button:hover {
             background-color: #45a049;
         }
@@ -123,10 +123,9 @@
             background-color: #218838;
         }
 
-        /* To ensure the form stays centered without overflow */
         body {
             min-height: 100vh;
-            padding-top: 80px; /* Height of navbar */
+            padding-top: 80px;
         }
     </style>
 </head>
@@ -142,16 +141,19 @@
         <a href="#" class="btn-get-started">Get Started</a>
     </nav>
     <div class="form-container">
-        <h2>Soil Composition Form</h2>
+        <h2>Fill your soil data</h2>
         <form id="soilForm">
-            <label for="k">Potassium (K):</label>
-            <input type="number" id="k" name="k" placeholder="Enter K value" required>
+            <label for="n">Nitrogen (N) in ppm:</label>
+            <input type="number" id="n" name="n" placeholder="Enter Nitrogen value" required>
 
-            <label for="na">Sodium (Na):</label>
-            <input type="number" id="na" name="na" placeholder="Enter Na value" required>
+            <label for="p">Phosphorus (P) in ppm:</label>
+            <input type="number" id="p" name="p" placeholder="Enter Phosphorus value" required>
 
-            <label for="p">Phosphorus (P):</label>
-            <input type="number" id="p" name="p" placeholder="Enter P value" required>
+            <label for="k">Potassium (K) in ppm:</label>
+            <input type="number" id="k" name="k" placeholder="Enter Potassium value" required>
+
+            <label for="ph">pH level of soil:</label>
+            <input type="number" id="ph" name="ph" step="0.01" placeholder="Enter pH value" required>
 
             <button type="submit">Submit</button>
         </form>
@@ -160,9 +162,35 @@
     <script>
         document.getElementById('soilForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            alert('Your report has been submitted!');
+            
+            // Collect form data
+            const n = document.getElementById('n').value;
+            const p = document.getElementById('p').value;
+            const k = document.getElementById('k').value;
+            const ph = document.getElementById('ph').value;
+            
+            // Send a POST request to the backend
+            fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ n: n, p: p, k: k, ph: ph }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Prediction: ' + data.prediction);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('There was an error with the prediction. Please try again.');
+            });
         });
     </script>
-
 </body>
 </html>
